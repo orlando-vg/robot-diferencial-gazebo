@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <world name="pista">
+
+    <!-- ===== Física: paso de 1 ms, tiempo real ===== -->
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- ===== Plugins obligatorios del mundo (física, escena, sensores, comandos) ===== -->
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+
+    <light type="directional" name="sol">
+      <pose>0 0 10 0 0 0</pose>
+      <direction>0.3 0.3 -1</direction>
+    </light>
+
+    <!-- ===== Piso ===== -->
+    <model name="piso">
+      <static>true</static>
+      <link name="link">
+        <collision name="col">
+          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
+        </collision>
+        <visual name="vis">
+          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
+          <material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ===== Muros exteriores (rojos). pose = x y z roll pitch yaw ===== -->
+    <model name="muro_sur">
+      <static>true</static>
+      <pose>0 -3 0.2 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>6.0 0.1 0.4</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>6.0 0.1 0.4</size></box></geometry>
+          <material><ambient>0.8 0.2 0.2 1</ambient><diffuse>0.8 0.2 0.2 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="muro_norte">
+      <static>true</static>
+      <pose>0 3 0.2 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>6.0 0.1 0.4</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>6.0 0.1 0.4</size></box></geometry>
+          <material><ambient>0.8 0.2 0.2 1</ambient><diffuse>0.8 0.2 0.2 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="muro_este">
+      <static>true</static>
+      <pose>4 0 0.2 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.1 4.0 0.4</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.1 4.0 0.4</size></box></geometry>
+          <material><ambient>0.8 0.2 0.2 1</ambient><diffuse>0.8 0.2 0.2 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="muro_oeste">
+      <static>true</static>
+      <pose>-4 0 0.2 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.1 4.0 0.4</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.1 4.0 0.4</size></box></geometry>
+          <material><ambient>0.8 0.2 0.2 1</ambient><diffuse>0.8 0.2 0.2 1</diffuse></material></visual>
+      </link>
+    </model>
+
+    <!-- ===== Curvas: esquinas cortadas a 45° (naranja) ===== -->
+    <model name="curva_se">
+      <static>true</static>
+      <pose>3.5 -2.5 0.2 0 0 0.7854</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>1.5 0.1 0.4</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>1.5 0.1 0.4</size></box></geometry>
+          <material><ambient>0.9 0.6 0.1 1</ambient><diffuse>0.9 0.6 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="curva_ne">
+      <static>true</static>
+      <pose>3.5 2.5 0.2 0 0 -0.7854</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>1.5 0.1 0.4</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>1.5 0.1 0.4</size></box></geometry>
+          <material><ambient>0.9 0.6 0.1 1</ambient><diffuse>0.9 0.6 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="curva_no">
+      <static>true</static>
+      <pose>-3.5 2.5 0.2 0 0 0.7854</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>1.5 0.1 0.4</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>1.5 0.1 0.4</size></box></geometry>
+          <material><ambient>0.9 0.6 0.1 1</ambient><diffuse>0.9 0.6 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="curva_so">
+      <static>true</static>
+      <pose>-3.5 -2.5 0.2 0 0 -0.7854</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>1.5 0.1 0.4</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>1.5 0.1 0.4</size></box></geometry>
+          <material><ambient>0.9 0.6 0.1 1</ambient><diffuse>0.9 0.6 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+
+    <!-- ===== Isla central (verde): deja un carril de ~1.15 m alrededor ===== -->
+    <model name="isla">
+      <static>true</static>
+      <pose>0 0 0.2 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>5.6 3.6 0.4</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>5.6 3.6 0.4</size></box></geometry>
+          <material><ambient>0.2 0.6 0.2 1</ambient><diffuse>0.2 0.6 0.2 1</diffuse></material></visual>
+      </link>
+    </model>
+
+    <!-- ===== Estrechamiento (amarillo): el carril norte queda de 0.5 m ===== -->
+    <model name="estrechamiento">
+      <static>true</static>
+      <pose>0 2.65 0.2 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.8 0.7 0.4</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.8 0.7 0.4</size></box></geometry>
+          <material><ambient>0.9 0.9 0.1 1</ambient><diffuse>0.9 0.9 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+
+    <!-- ===== Chicana (amarillo): el carril oeste queda de 0.6 m ===== -->
+    <model name="chicana">
+      <static>true</static>
+      <pose>-3.075 0 0.2 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.55 0.4 0.4</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.55 0.4 0.4</size></box></geometry>
+          <material><ambient>0.9 0.9 0.1 1</ambient><diffuse>0.9 0.9 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+
+    <!-- ===== Obstáculos (azul) ===== -->
+    <model name="obstaculo_1">
+      <static>true</static>
+      <pose>-1.5 -2.4 0.2 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.15</radius><length>0.4</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.15</radius><length>0.4</length></cylinder></geometry>
+          <material><ambient>0.1 0.1 0.9 1</ambient><diffuse>0.1 0.1 0.9 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="obstaculo_2">
+      <static>true</static>
+      <pose>1.0 -2.2 0.2 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.15</radius><length>0.4</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.15</radius><length>0.4</length></cylinder></geometry>
+          <material><ambient>0.1 0.1 0.9 1</ambient><diffuse>0.1 0.1 0.9 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="obstaculo_3">
+      <static>true</static>
+      <pose>3.4 0 0.2 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.3 0.3 0.4</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.3 0.3 0.4</size></box></geometry>
+          <material><ambient>0.1 0.1 0.9 1</ambient><diffuse>0.1 0.1 0.9 1</diffuse></material></visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
