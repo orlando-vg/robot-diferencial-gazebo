@@ -81,4 +81,26 @@
   <xacro:caster prefijo="del" x="0.12"/>
   <xacro:caster prefijo="tra" x="-0.12"/>
 
+  <!-- ===== Plugins de Gazebo ===== -->
+  <gazebo>
+    <!-- DiffDrive: recibe la velocidad (/cmd_vel), hace girar las ruedas
+         y publica la odometría (/odom) y la transformación odom -> base_link (/tf) -->
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+      <left_joint>joint_rueda_izq</left_joint>
+      <right_joint>joint_rueda_der</right_joint>
+      <wheel_separation>${separacion_ruedas}</wheel_separation>
+      <wheel_radius>${rueda_radio}</wheel_radius>
+      <odom_publish_frequency>30</odom_publish_frequency>
+      <topic>/cmd_vel</topic>
+      <odom_topic>/odom</odom_topic>
+      <tf_topic>/tf</tf_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_link</child_frame_id>
+    </plugin>
+
+    <!-- JointStatePublisher: publica cuánto y qué tan rápido gira cada rueda.
+         Lo necesitamos después para el nodo de cinemática (/joint_states) -->
+    <plugin filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher"/>
+  </gazebo>
 </robot>
