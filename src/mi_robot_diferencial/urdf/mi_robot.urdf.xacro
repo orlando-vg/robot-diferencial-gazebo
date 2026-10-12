@@ -80,7 +80,107 @@
 
   <xacro:caster prefijo="del" x="0.12"/>
   <xacro:caster prefijo="tra" x="-0.12"/>
+  <!-- ===== LiDAR ===== -->
+  <link name="lidar_link">
+    <visual>
+      <geometry><cylinder radius="0.035" length="0.04"/></geometry>
+      <material name="rojo"><color rgba="0.8 0.1 0.1 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.035" length="0.04"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.17"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+  <joint name="joint_lidar" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <!-- Centrado encima del chasis: ve 360° sin que el propio robot le tape los rayos -->
+    <origin xyz="0 0 0.07" rpy="0 0 0"/>
+  </joint>
 
+  <gazebo reference="lidar_link">
+    <sensor name="lidar" type="gpu_lidar">
+      <gz_frame_id>lidar_link</gz_frame_id>   <!-- frame que aparece en el mensaje /scan -->
+      <topic>scan</topic>
+      <update_rate>10</update_rate>          <!-- 10 Hz -->
+      <always_on>true</always_on>
+      <visualize>true</visualize>            <!-- dibuja los rayos en Gazebo -->
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>           <!-- 360 muestras = 1 por grado -->
+            <resolution>1</resolution>
+            <min_angle>-3.14159</min_angle>  <!-- FOV de 360° -->
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.15</min>                    <!-- rango mínimo [m] -->
+          <max>12.0</max>                    <!-- rango máximo [m] -->
+          <resolution>0.01</resolution>
+        </range>
+        <noise>                              <!-- ruido de medición, como un sensor real -->
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </lidar>
+    </sensor>
+  </gazebo>
+
+  <!-- ===== Cámara ===== -->
+  <link name="camera_link">
+    <visual>
+      <geometry><box size="0.02 0.05 0.03"/></geometry>
+      <material name="verde"><color rgba="0.1 0.7 0.1 1"/></material>
+    </visual>
+    <collision>
+      <geometry><box size="0.02 0.05 0.03"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.03"/>
+      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+    </inertial>
+  </link>
+  <joint name="joint_camara" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <!-- En la cara frontal del chasis, mirando hacia adelante (+x) -->
+    <origin xyz="0.16 0 0.02" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Frame óptico: las imágenes usan z hacia adelante, x a la derecha, y hacia abajo -->
+  <link name="camera_optical_link"/>
+  <joint name="joint_camara_optica" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_optical_link"/>
+    <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+  </joint>
+
+  <gazebo reference="camera_link">
+    <sensor name="camara" type="camera">
+      <gz_frame_id>camera_optical_link</gz_frame_id>
+      <topic>image_raw</topic>               <!-- camera_info sale solo en /camera_info -->
+      <update_rate>30</update_rate>          <!-- 30 FPS -->
+      <always_on>true</always_on>
+      <camera>
+        <horizontal_fov>1.0856</horizontal_fov>   <!-- 62.2° -->
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.05</near>
+          <far>20.0</far>
+        </clip>
+      </camera>
+    </sensor>
+  </gazebo>
+  
   <!-- ===== Plugins de Gazebo ===== -->
   <gazebo>
     <!-- DiffDrive: recibe la velocidad (/cmd_vel), hace girar las ruedas
