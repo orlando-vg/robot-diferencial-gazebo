@@ -1,24 +1,84 @@
 <?xml version="1.0"?>
 <robot name="mi_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+  <!-- ===== Parámetros: se cambian aquí y se actualizan en todo el archivo ===== -->
+  <xacro:property name="rueda_radio" value="0.05"/>
+  <xacro:property name="rueda_ancho" value="0.03"/>
+  <xacro:property name="separacion_ruedas" value="0.25"/>
+  <xacro:property name="caster_radio" value="0.01"/>
+
+  <!-- ===== Chasis ===== -->
   <link name="base_link">
     <visual>
-      <geometry>
-        <box size="0.3 0.2 0.1"/>
-      </geometry>
-      <material name="azul">
-        <color rgba="0.2 0.4 0.8 1"/>
-      </material>
+      <geometry><box size="0.3 0.2 0.1"/></geometry>
+      <material name="azul"><color rgba="0.2 0.4 0.8 1"/></material>
     </visual>
     <collision>
-      <geometry>
-        <box size="0.3 0.2 0.1"/>
-      </geometry>
+      <geometry><box size="0.3 0.2 0.1"/></geometry>
     </collision>
     <inertial>
       <mass value="1.0"/>
       <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
     </inertial>
   </link>
+
+  <!-- ===== Plantilla de rueda (se usa dos veces: izquierda y derecha) ===== -->
+  <xacro:macro name="rueda" params="prefijo y_signo">
+    <link name="rueda_${prefijo}">
+      <visual>
+        <geometry><cylinder radius="${rueda_radio}" length="${rueda_ancho}"/></geometry>
+        <material name="negro"><color rgba="0.1 0.1 0.1 1"/></material>
+      </visual>
+      <collision>
+        <geometry><cylinder radius="${rueda_radio}" length="${rueda_ancho}"/></geometry>
+      </collision>
+      <inertial>
+        <mass value="0.1"/>
+        <inertia ixx="0.0005" ixy="0.0" ixz="0.0" iyy="0.0005" iyz="0.0" izz="0.0005"/>
+      </inertial>
+    </link>
+
+    <joint name="joint_rueda_${prefijo}" type="continuous">
+      <parent link="base_link"/>
+      <child link="rueda_${prefijo}"/>
+      <!-- rpy = -90°: el eje de la rueda apunta a +y, así un giro positivo hace avanzar en +x -->
+      <origin xyz="0 ${y_signo * separacion_ruedas/2} -0.02" rpy="-1.5708 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:rueda prefijo="izq" y_signo="1"/>
+  <xacro:rueda prefijo="der" y_signo="-1"/>
+
+  <!-- ===== Casters: apoyos adelante y atrás para que el chasis no se incline ===== -->
+  <xacro:macro name="caster" params="prefijo x">
+    <link name="caster_${prefijo}">
+      <visual>
+        <geometry><sphere radius="${caster_radio}"/></geometry>
+        <material name="gris"><color rgba="0.6 0.6 0.6 1"/></material>
+      </visual>
+      <collision>
+        <geometry><sphere radius="${caster_radio}"/></geometry>
+      </collision>
+      <inertial>
+        <mass value="0.01"/>
+        <inertia ixx="1e-6" ixy="0.0" ixz="0.0" iyy="1e-6" iyz="0.0" izz="1e-6"/>
+      </inertial>
+    </link>
+    <joint name="joint_caster_${prefijo}" type="fixed">
+      <parent link="base_link"/>
+      <child link="caster_${prefijo}"/>
+      <!-- El fondo de la esfera queda a la misma altura que el fondo de las ruedas -->
+      <origin xyz="${x} 0 ${-0.02 - rueda_radio + caster_radio}" rpy="0 0 0"/>
+    </joint>
+    <!-- Sin fricción: la esfera se desliza y no frena al robot -->
+    <gazebo reference="caster_${prefijo}">
+      <mu1>0.0</mu1>
+      <mu2>0.0</mu2>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:caster prefijo="del" x="0.12"/>
+  <xacro:caster prefijo="tra" x="-0.12"/>
 
 </robot>
