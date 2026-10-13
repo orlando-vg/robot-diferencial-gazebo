@@ -22,5 +22,8 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-
+# Copia estas carpetas a install/ para que el launch las encuentre
+install(DIRECTORY urdf worlds config launch rviz
+  DESTINATION share/${PROJECT_NAME}
+)
 ament_package()
