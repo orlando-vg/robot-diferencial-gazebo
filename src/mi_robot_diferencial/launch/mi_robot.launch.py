@@ -66,10 +66,18 @@ def generate_launch_description():
         parameters=[{'use_sim_time': True}],
     )
 
+    # ===== 6) Nodo propio: cinemática de las llantas vs /odom del plugin =====
+    odom_ruedas = Node(
+        package='mi_robot_cinematica',
+        executable='odom_ruedas',
+        parameters=[{'use_sim_time': True}],
+        output='screen',
+    )
     return LaunchDescription([
         gazebo,
         robot_state_publisher,
         spawn,
         bridge,
         rviz,
+        odom_ruedas,
     ])
